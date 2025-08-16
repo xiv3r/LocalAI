@@ -3114,6 +3114,51 @@
     - filename: gemma-3-270m-it-qat-Q4_0.gguf
       uri: huggingface://ggml-org/gemma-3-270m-it-qat-GGUF/gemma-3-270m-it-qat-Q4_0.gguf
       sha256: 3626e245220ca4a1c5911eb4010b3ecb7bdbf5bc53c79403c21355354d1e2dc6
+- !!merge <<: *gemma3
+  name: "thedrummer_gemma-3-r1-27b-v1"
+  icon: https://cdn-uploads.huggingface.co/production/uploads/65f2fd1c25b848bd061b5c2e/stLJgTMretW2kdUMq-gIV.png
+  urls:
+    - https://huggingface.co/TheDrummer/Gemma-3-R1-27B-v1
+    - https://huggingface.co/bartowski/TheDrummer_Gemma-3-R1-27B-v1-GGUF
+  description: |
+    Gemma 3 27B reasoning tune that unlocks more capabilities and less positivity! Should be vision capable.
+  overrides:
+    parameters:
+      model: TheDrummer_Gemma-3-R1-27B-v1-Q4_K_M.gguf
+  files:
+    - filename: TheDrummer_Gemma-3-R1-27B-v1-Q4_K_M.gguf
+      sha256: c6e85f6ee294d46686c129a03355bb51020ff73a8dc3e1f1f61c8092448fc003
+      uri: huggingface://bartowski/TheDrummer_Gemma-3-R1-27B-v1-GGUF/TheDrummer_Gemma-3-R1-27B-v1-Q4_K_M.gguf
+- !!merge <<: *gemma3
+  name: "thedrummer_gemma-3-r1-12b-v1"
+  icon: https://cdn-uploads.huggingface.co/production/uploads/65f2fd1c25b848bd061b5c2e/stLJgTMretW2kdUMq-gIV.png
+  urls:
+    - https://huggingface.co/TheDrummer/Gemma-3-R1-12B-v1
+    - https://huggingface.co/bartowski/TheDrummer_Gemma-3-R1-12B-v1-GGUF
+  description: |
+    Gemma 3 27B reasoning tune that unlocks more capabilities and less positivity! Should be vision capable.
+  overrides:
+    parameters:
+      model: TheDrummer_Gemma-3-R1-12B-v1-Q4_K_M.gguf
+  files:
+    - filename: TheDrummer_Gemma-3-R1-12B-v1-Q4_K_M.gguf
+      sha256: 6517394bf14b85d6009e1ad8fd1fc6179fa3de3d091011cf14cacba1aee5b393
+      uri: huggingface://bartowski/TheDrummer_Gemma-3-R1-12B-v1-GGUF/TheDrummer_Gemma-3-R1-12B-v1-Q4_K_M.gguf
+- !!merge <<: *gemma3
+  name: "thedrummer_gemma-3-r1-4b-v1"
+  icon: https://cdn-uploads.huggingface.co/production/uploads/65f2fd1c25b848bd061b5c2e/stLJgTMretW2kdUMq-gIV.png
+  urls:
+    - https://huggingface.co/TheDrummer/Gemma-3-R1-4B-v1
+    - https://huggingface.co/bartowski/TheDrummer_Gemma-3-R1-4B-v1-GGUF
+  description: |
+    Gemma 3 27B reasoning tune that unlocks more capabilities and less positivity! Should be vision capable.
+  overrides:
+    parameters:
+      model: TheDrummer_Gemma-3-R1-4B-v1-Q4_K_M.gguf
+  files:
+    - filename: TheDrummer_Gemma-3-R1-4B-v1-Q4_K_M.gguf
+      sha256: 72a7dc5bddbdf6bbea0d47aea8573d6baa191f4ddebd75547091c991678bcd08
+      uri: huggingface://bartowski/TheDrummer_Gemma-3-R1-4B-v1-GGUF/TheDrummer_Gemma-3-R1-4B-v1-Q4_K_M.gguf
 - &llama4
   url: "github:mudler/LocalAI/gallery/llama3.1-instruct.yaml@master"
   icon: https://avatars.githubusercontent.com/u/153379578
@@ -11980,6 +12025,28 @@
     - filename: Tarek07_Nomad-LLaMa-70B-Q4_K_M.gguf
       sha256: 734c7042a84cd6c059c4ddd3ffb84b23752aeaaf670c5cbb0031f8128ec5ffc8
       uri: huggingface://bartowski/Tarek07_Nomad-LLaMa-70B-GGUF/Tarek07_Nomad-LLaMa-70B-Q4_K_M.gguf
+- !!merge <<: *llama31
+  name: "wingless_imp_8b-i1"
+  icon: https://huggingface.co/SicariusSicariiStuff/Wingless_Imp_8B/resolve/main/Images/Wingless_Imp_8B.jpeg
+  urls:
+    - https://huggingface.co/SicariusSicariiStuff/Wingless_Imp_8B
+    - https://huggingface.co/mradermacher/Wingless_Imp_8B-i1-GGUF
+  description: |
+    Highest rated 8B model according to a closed external benchmark. See details at the buttom of the page.
+    High IFeval for an 8B model that is not too censored: 74.30.
+    Strong Roleplay internet RP format lovers will appriciate it, medium size paragraphs (as requested by some people).
+    Very coherent in long context thanks to llama 3.1 models.
+    Lots of knowledge from all the merged models.
+    Very good writing from lots of books data and creative writing in late SFT stage.
+    Feels smart — the combination of high IFeval and the knowledge from the merged models show up.
+    Unique feel due to the merged models, no SFT was done to alter it, because I liked it as it is.
+  overrides:
+    parameters:
+      model: Wingless_Imp_8B.i1-Q4_K_M.gguf
+  files:
+    - filename: Wingless_Imp_8B.i1-Q4_K_M.gguf
+      sha256: 3a5ff776ab3286f43937c3c2d8e2e1e09c5ea1c91a79945c34ec071e23f31e3b
+      uri: huggingface://mradermacher/Wingless_Imp_8B-i1-GGUF/Wingless_Imp_8B.i1-Q4_K_M.gguf
 - &deepseek
   url: "github:mudler/LocalAI/gallery/deepseek.yaml@master" ## Deepseek
   name: "deepseek-coder-v2-lite-instruct"
