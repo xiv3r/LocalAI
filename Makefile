@@ -456,6 +456,47 @@ test-extra: prepare-test-extra
 	$(MAKE) -C backend/python/trl test
 	$(MAKE) -C backend/rust/kokoros test
 
+##
+## End-to-end gRPC tests that exercise a built backend container image.
+##
+## The test suite in tests/e2e-backends is backend-agnostic. You drive it via env
+## vars (see tests/e2e-backends/backend_test.go for the full list) and the
+## capability-driven harness picks which gRPC RPCs to exercise:
+##
+##   BACKEND_IMAGE            Required. Docker image to test, e.g. local-ai-backend:llama-cpp.
+##   BACKEND_TEST_MODEL_URL   URL of a model file to download and load.
+##   BACKEND_TEST_MODEL_FILE  Path to an already-downloaded model (skips download).
+##   BACKEND_TEST_CAPS        Comma-separated capabilities, default "health,load,predict,stream".
+##   BACKEND_TEST_PROMPT      Override the prompt used in predict/stream specs.
+##
+## Direct usage (image already built, no docker-build-* dependency):
+##
+##   make test-extra-backend BACKEND_IMAGE=local-ai-backend:llama-cpp \
+##       BACKEND_TEST_MODEL_URL=https://.../model.gguf
+##
+## Convenience wrappers below build a specific backend image first, then run the
+## suite against it.
+##
+BACKEND_TEST_MODEL_URL?=https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf
+
+## Generic target — runs the suite against whatever BACKEND_IMAGE points at.
+## Depends on protogen-go so pkg/grpc/proto is generated before `go test`.
+test-extra-backend: protogen-go
+	@test -n "$$BACKEND_IMAGE" || { echo "BACKEND_IMAGE must be set" >&2; exit 1; }
+	BACKEND_IMAGE="$$BACKEND_IMAGE" \
+	BACKEND_TEST_MODEL_URL="$${BACKEND_TEST_MODEL_URL:-$(BACKEND_TEST_MODEL_URL)}" \
+	BACKEND_TEST_MODEL_FILE="$$BACKEND_TEST_MODEL_FILE" \
+	BACKEND_TEST_CAPS="$$BACKEND_TEST_CAPS" \
+	BACKEND_TEST_PROMPT="$$BACKEND_TEST_PROMPT" \
+	go test -v -timeout 15m ./tests/e2e-backends/...
+
+## Convenience wrappers: build the image, then exercise it.
+test-extra-backend-llama-cpp: docker-build-llama-cpp
+	BACKEND_IMAGE=local-ai-backend:llama-cpp $(MAKE) test-extra-backend
+
+test-extra-backend-ik-llama-cpp: docker-build-ik-llama-cpp
+	BACKEND_IMAGE=local-ai-backend:ik-llama-cpp $(MAKE) test-extra-backend
+
 DOCKER_IMAGE?=local-ai
 IMAGE_TYPE?=core
 BASE_IMAGE?=ubuntu:24.04
@@ -549,6 +590,8 @@ backend-images:
 # Backend metadata: BACKEND_NAME | DOCKERFILE_TYPE | BUILD_CONTEXT | PROGRESS_FLAG | NEEDS_BACKEND_ARG
 # llama-cpp is special - uses llama-cpp Dockerfile and doesn't need BACKEND arg
 BACKEND_LLAMA_CPP = llama-cpp|llama-cpp|.|false|false
+# ik-llama-cpp is a fork of llama.cpp with superior CPU performance
+BACKEND_IK_LLAMA_CPP = ik-llama-cpp|ik-llama-cpp|.|false|false
 
 # Golang backends
 BACKEND_PIPER = piper|golang|.|false|true
@@ -619,6 +662,7 @@ endef
 
 # Generate all docker-build targets
 $(eval $(call generate-docker-build-target,$(BACKEND_LLAMA_CPP)))
+$(eval $(call generate-docker-build-target,$(BACKEND_IK_LLAMA_CPP)))
 $(eval $(call generate-docker-build-target,$(BACKEND_PIPER)))
 $(eval $(call generate-docker-build-target,$(BACKEND_LOCAL_STORE)))
 $(eval $(call generate-docker-build-target,$(BACKEND_HUGGINGFACE)))
@@ -663,7 +707,7 @@ $(eval $(call generate-docker-build-target,$(BACKEND_SAM3_CPP)))
 docker-save-%: backend-images
 	docker save local-ai-backend:$* -o backend-images/$*.tar
 
-docker-build-backends: docker-build-llama-cpp docker-build-rerankers docker-build-vllm docker-build-vllm-omni docker-build-transformers docker-build-outetts docker-build-diffusers docker-build-kokoro docker-build-faster-whisper docker-build-coqui docker-build-chatterbox docker-build-vibevoice docker-build-moonshine docker-build-pocket-tts docker-build-qwen-tts docker-build-fish-speech docker-build-faster-qwen3-tts docker-build-qwen-asr docker-build-nemo docker-build-voxcpm docker-build-whisperx docker-build-ace-step docker-build-acestep-cpp docker-build-voxtral docker-build-mlx-distributed docker-build-trl docker-build-llama-cpp-quantization docker-build-kokoros docker-build-sam3-cpp docker-build-qwen3-tts-cpp
+docker-build-backends: docker-build-llama-cpp docker-build-ik-llama-cpp docker-build-rerankers docker-build-vllm docker-build-vllm-omni docker-build-transformers docker-build-outetts docker-build-diffusers docker-build-kokoro docker-build-faster-whisper docker-build-coqui docker-build-chatterbox docker-build-vibevoice docker-build-moonshine docker-build-pocket-tts docker-build-qwen-tts docker-build-fish-speech docker-build-faster-qwen3-tts docker-build-qwen-asr docker-build-nemo docker-build-voxcpm docker-build-whisperx docker-build-ace-step docker-build-acestep-cpp docker-build-voxtral docker-build-mlx-distributed docker-build-trl docker-build-llama-cpp-quantization docker-build-kokoros docker-build-sam3-cpp docker-build-qwen3-tts-cpp
 
 ########################################################
 ### Mock Backend for E2E Tests
